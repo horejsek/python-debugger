@@ -4,7 +4,7 @@ Python library for debugging.
 
 ## Requirements
 
-- Python 2.x
+- Python 2.6 or later.
 
 ## Installation
 

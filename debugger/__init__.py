@@ -25,7 +25,7 @@ class DebugMetaClass(type):
     def __new__(metacls, classname, bases, classDict):
         cls = type.__new__(metacls, classname, bases, classDict)
 
-        for attributeName, attribute in classDict.iteritems():
+        for attributeName, attribute in classDict.items():
             if hasattr(attribute, '__call__'):
                 dbgDecorator = DebugMetaClass.debugDecorator(cls)
                 setattr(cls, attributeName, dbgDecorator(attribute))
@@ -79,7 +79,7 @@ class DebugMetaClass(type):
                     func.__name__,
                     ', '.join(str(arg) for arg in args),
                     ', ' if kwds else '',
-                    ', '.join('%s=%s' % (k, v) for k, v in kwds.iteritems()),
+                    ', '.join('%s=%s' % (k, v) for k, v in kwds.items()),
                 ))
                 try:
                     startTime = time.time()
@@ -118,3 +118,4 @@ class DebugMetaClass(type):
         def f(metacls, msg):
             logMethod(msg)
         DebugMetaClass.log = classmethod(f)
+

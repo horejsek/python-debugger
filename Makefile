@@ -1,5 +1,6 @@
 
 PYTHON=`which python`
+PYTHON3=`which python3`
 
 all:
 	@echo "make source - Create source package"
@@ -14,6 +15,9 @@ upload:
 
 install:
 	$(PYTHON) setup.py install
+
+install3:
+	$(PYTHON3) setup.py install
 
 install-building-packages:
 	apt-get install build-essential dh-make debhelper devscripts
