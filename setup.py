@@ -21,7 +21,7 @@ setup(
     ],
     version = '0.1',
     url = 'https://github.com/horejsek/python-debugger',
-    description = 'Python library for writing SQL queries.',
+    description = 'Debugging.',
     author = 'Michal Horejsek',
     author_email = 'horejsekmichal@gmail.com',
     license = 'GNU General Public License (GPL)',
