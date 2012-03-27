@@ -18,6 +18,8 @@ debugger.DebugMetaClass.setLogMethod(logMethod)
 
 
 
+# Python3:
+# class C(object, metaclass=debugger.DebugMetaClass):
 class C(object):
     __metaclass__ = debugger.DebugMetaClass
 

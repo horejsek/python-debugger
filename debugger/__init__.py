@@ -7,12 +7,14 @@
 
 import traceback
 import time
+import re
 
 
 
 class DebugMetaClass(type):
     # Misc logging options.
     tracebackDeep = 3
+    logByRegexp = ''
 
     # Logging options of ATTRIBUTES.
     logOfSettingAttributes = True
@@ -57,7 +59,7 @@ class DebugMetaClass(type):
 
     @classmethod
     def logOfSettingAttribute(metacls, cls, key, value):
-        if not metacls.logOfSettingAttributes:
+        if not metacls.logOfSettingAttributes or not metacls.logfilter(cls.__name__, key, value):
             return
 
         metacls.log('%sset attribute %s.%s to %s' % (
@@ -84,6 +86,9 @@ class DebugMetaClass(type):
 
     @classmethod
     def logOfGettingAttribute(metacls, cls, ins, key):
+        if not metacls.logfilter(cls.__name__, key):
+            return
+
         if (
             not key.startswith('__') and
             key not in ins.__dict__ and
@@ -121,14 +126,14 @@ class DebugMetaClass(type):
         def f(func):
             def wrapper(*args, **kwds):
                 metacls.logOfMethodCalls(cls, func, args, kwds)
-                res = metacls.logOfMethods(func, args, kwds)
+                res = metacls.logOfMethods(cls, func, args, kwds)
                 return res
             return wrapper
         return f
 
     @classmethod
     def logOfMethodCalls(metacls, cls, func, args, kwds):
-        if not metacls.logOfCallingMethod:
+        if metacls._logMethods(cls, func, args, kwds):
             return
 
         metacls.log('%scall of %s.%s(%s%s%s)' % (
@@ -142,8 +147,8 @@ class DebugMetaClass(type):
         metacls.calledFrom()
 
     @classmethod
-    def logOfMethods(metacls, func, args, kwds):
-        if not metacls.logOfCallingMethod:
+    def logOfMethods(metacls, cls, func, args, kwds):
+        if metacls._logMethods(cls, func, args, kwds):
             res = func(*args, **kwds)
             return res
 
@@ -161,6 +166,26 @@ class DebugMetaClass(type):
             raise
         else:
             return res
+
+    @classmethod
+    def _logMethods(metacls, cls, func, args, kwds):
+        return not metacls.logOfCallingMethod or not metacls.logfilter(cls.__name__, func.__name__, args, kwds)
+
+
+
+    @classmethod
+    def logfilter(metacls, *args):
+        def toStr(val):
+            if isinstance(val, (list, tuple)):
+                return ' '.join(toStr(v) for v in val)
+            elif isinstance(val, dict):
+                return ' '.join('%s=%s' % (k, toStr(v)) for k, v in val.items())
+            else:
+                return str(val)
+
+        if re.search(metacls.logByRegexp, toStr(args)):
+            return True
+        return False
 
 
 

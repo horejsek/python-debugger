@@ -6,22 +6,11 @@
 #
 
 import debugger
+import time
 
-'''
-With following options debuger will print nothing.
-'''
 
-debugger.DebugMetaClass.tracebackDeep = 0
 
-debugger.DebugMetaClass.logOfSettingAttributes = False
-debugger.DebugMetaClass.logOfGettingAttributes = False
-debugger.DebugMetaClass.logOfGettingUndefinedAttributes = False
-debugger.DebugMetaClass.logOfGettingPrivateAttributes = False
-
-debugger.DebugMetaClass.logOfCallingMethod = False
-debugger.DebugMetaClass.logOfResultOfMethod = False
-
-debugger.DebugMetaClass.logTimes = False
+debugger.DebugMetaClass.logByRegexp = 'sum'
 
 
 
@@ -37,6 +26,7 @@ class C(object):
         return num**exponent
 
     def sum(self, *args):
+        time.sleep(0.235)
         return sum(args)
 
 
@@ -52,3 +42,12 @@ c.pow(3)
 c.pow(num=3, exponent=3)
 
 c.sum(1, 2, 3, 4, 5)
+
+
+
+'''
+#DEBUG#> call of C.sum(<__main__.C object at 0xb70f4e0c>, 1, 2, 3, 4, 5)
+#> called from examples/loggingByRegexp.py:44: c.sum(1, 2, 3, 4, 5)
+#> time: 0.235 s
+#> with result: 15
+'''
