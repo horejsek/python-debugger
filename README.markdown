@@ -17,7 +17,7 @@ That's all! After this step you can start your favorite Python interpret (perhap
 bpython) and try import module `debugger`. See for examples below.
 
 
-## Examples:
+## Examples
 
 Check out for examples in directory examples.
 
