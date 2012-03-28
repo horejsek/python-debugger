@@ -43,7 +43,7 @@ This code will print:
     #DEBUG#> set attribute C.x to 1
     #> called from <input>:2: None
 
-For examples check out directory examples.
+For more examples check out directory examples.
 
 
 Enjoy!
