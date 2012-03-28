@@ -53,7 +53,7 @@ class DebugMetaClass(type):
     @classmethod
     def createSetAttrMethod(metacls, cls):
         def f(self, key, value):
-            metacls.logOfSettingAttribute(cls, key, value)
+            value = metacls.logOfSettingAttribute(cls, key, value)
             return super(cls, self).__setattr__(key, value)
         return f
 
@@ -70,10 +70,12 @@ class DebugMetaClass(type):
         ))
         # Decorate new method.
         if hasattr(value, '__call__'):
-            dbgDecorator = DebugMetaClass.debugDecorator(cls)
+            dbgDecorator = metacls.debugDecorator(cls)
             value = dbgDecorator(value)
             metacls.log('%ssetting of function, decorated' % metacls.logStartString2)
         metacls.calledFrom()
+
+        return value
 
 
 
