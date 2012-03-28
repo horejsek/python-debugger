@@ -29,11 +29,11 @@ c.f()
 '''
 It's working only for adding of methods to the instances.
 
-#DEBUG# set attribute C.f to <function <lambda> at 0xb73f8764>
-	setting of function, decorated
-	called from examples/dynamiclyAddedMethod.py:20: c.f = lambda: 24
-#DEBUG# call of C.<lambda>()
-	time: 0 ms
-	with result: 24
-	called from examples/dynamiclyAddedMethod.py:22: c.f()
+#DEBUG#> set attribute C.f to <function <lambda> at 0xb713964c>
+#> setting of function, decorated
+#> called from examples/dynamiclyAddedMethod.py:23: c.f = lambda: 24
+#DEBUG#> call of C.<lambda>()
+#> called from examples/dynamiclyAddedMethod.py:25: c.f()
+#> time: 0.000 s
+#> with result: 24
 '''

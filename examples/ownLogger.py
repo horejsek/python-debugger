@@ -38,7 +38,8 @@ logStream.close()
 
 
 '''
-#DEBUG# call of C.f(<__main__.C object at 0xb74c250c>)
-	with result: 'f'
-	called from examples/ownLogger.py:26: c.f()
+#DEBUG#> call of C.f(<__main__.C object at 0x8302dac>)
+#> called from examples/ownLogger.py:32: c.f()
+#> time: 0.000 s
+#> with result: 'f'
 '''

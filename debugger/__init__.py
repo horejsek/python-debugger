@@ -135,7 +135,7 @@ class DebugMetaClass(type):
 
     @classmethod
     def logOfMethodCalls(metacls, cls, func, args, kwds):
-        if metacls._logMethods(cls, func, args, kwds):
+        if metacls._ifLogMethods(cls, func, args, kwds):
             return
 
         metacls.log('%scall of %s.%s(%s%s%s)' % (
@@ -150,7 +150,7 @@ class DebugMetaClass(type):
 
     @classmethod
     def logOfMethods(metacls, cls, func, args, kwds):
-        if metacls._logMethods(cls, func, args, kwds):
+        if metacls._ifLogMethods(cls, func, args, kwds):
             res = func(*args, **kwds)
             return res
 
@@ -170,7 +170,7 @@ class DebugMetaClass(type):
             return res
 
     @classmethod
-    def _logMethods(metacls, cls, func, args, kwds):
+    def _ifLogMethods(metacls, cls, func, args, kwds):
         return not metacls.logOfCallingMethod or not metacls.logfilter(cls.__name__, func.__name__, args, kwds)
 
 
