@@ -19,7 +19,7 @@ setup(
     packages = [
         'debugger/',
     ],
-    version = '0.2',
+    version = '1.0',
     url = 'https://github.com/horejsek/python-debugger',
     description = 'Debugging.',
     author = 'Michal Horejsek',
