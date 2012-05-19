@@ -11,17 +11,18 @@ import debugger
 With following options debuger will print nothing.
 '''
 
-debugger.DebugMetaClass.tracebackDeep = 0
+debugger.DebugMetaClass._debug_tracebackDeep = 0
+debugger.DebugMetaClass._debug_logByRegexp = ''
 
-debugger.DebugMetaClass.logOfSettingAttributes = False
-debugger.DebugMetaClass.logOfGettingAttributes = False
-debugger.DebugMetaClass.logOfGettingUndefinedAttributes = False
-debugger.DebugMetaClass.logOfGettingPrivateAttributes = False
+debugger.DebugMetaClass._debug_logOfSettingAttributes = False
+debugger.DebugMetaClass._debug_logOfGettingAttributes = False
+debugger.DebugMetaClass._debug_logOfGettingUndefinedAttributes = False
+debugger.DebugMetaClass._debug_logOfGettingPrivateAttributes = False
 
-debugger.DebugMetaClass.logOfCallingMethod = False
-debugger.DebugMetaClass.logOfResultOfMethod = False
+debugger.DebugMetaClass._debug_logOfCallingMethod = False
+debugger.DebugMetaClass._debug_logOfResultOfMethod = False
 
-debugger.DebugMetaClass.logTimes = False
+debugger.DebugMetaClass._debug_logTimes = False
 
 
 

@@ -13,23 +13,23 @@ import re
 
 class DebugMetaClass(type):
     # Misc logging options.
-    tracebackDeep = 3
-    logByRegexp = ''
+    _debug_tracebackDeep = 3
+    _debug_logByRegexp = ''
 
     # Logging options of ATTRIBUTES.
-    logOfSettingAttributes = True
-    logOfGettingAttributes = True
-    logOfGettingUndefinedAttributes = True
-    logOfGettingPrivateAttributes = False
+    _debug_logOfSettingAttributes = True
+    _debug_logOfGettingAttributes = True
+    _debug_logOfGettingUndefinedAttributes = True
+    _debug_logOfGettingPrivateAttributes = False
 
     # Logging options of METHODS.
-    logOfCallingMethod = True
-    logOfResultOfMethod = True
-    logTimes = True
+    _debug_logOfCallingMethod = True
+    _debug_logOfResultOfMethod = True
+    _debug_logTimes = True
 
     # Logging prefixes.
-    logStartString1 = '#DEBUG#> '
-    logStartString2 = '#> '
+    _debug_logStartString1 = '#DEBUG#> '
+    _debug_logStartString2 = '#> '
 
 
     def __new__(metacls, classname, bases, classDict):
@@ -39,56 +39,56 @@ class DebugMetaClass(type):
         # Decorate all methods.
         for attributeName, attribute in classDict.items():
             if hasattr(attribute, '__call__'):
-                dbgDecorator = metacls.debugDecorator(cls)
+                dbgDecorator = metacls.__debugDecorator(cls)
                 setattr(cls, attributeName, dbgDecorator(attribute))
 
         # Add logging methods for set & get.
-        cls.__setattr__ = metacls.createSetAttrMethod(cls)
-        cls.__getattribute__ = metacls.createGetAttrMethod(cls)
+        cls.__setattr__ = metacls.__createSetAttrMethod(cls)
+        cls.__getattribute__ = metacls.__createGetAttrMethod(cls)
 
         return cls
 
 
 
     @classmethod
-    def createSetAttrMethod(metacls, cls):
+    def __createSetAttrMethod(metacls, cls):
         def f(self, key, value):
-            value = metacls.logOfSettingAttribute(cls, key, value)
+            value = metacls.__logOfSettingAttribute(cls, key, value)
             return super(cls, self).__setattr__(key, value)
         return f
 
     @classmethod
-    def logOfSettingAttribute(metacls, cls, key, value):
-        if not metacls.logOfSettingAttributes or not metacls.logfilter(cls.__name__, key, value):
+    def __logOfSettingAttribute(metacls, cls, key, value):
+        if not metacls._debug_logOfSettingAttributes or not metacls.__logfilter(cls.__name__, key, value):
             return
 
-        metacls.log('%sset attribute %s.%s to %s' % (
-            metacls.logStartString1,
+        metacls.__log('%sset attribute %s.%s to %s' % (
+            metacls._debug_logStartString1,
             cls.__name__,
             key,
             repr(value),
         ))
         # Decorate new method.
         if hasattr(value, '__call__'):
-            dbgDecorator = metacls.debugDecorator(cls)
+            dbgDecorator = metacls.__debugDecorator(cls)
             value = dbgDecorator(value)
-            metacls.log('%ssetting of function, decorated' % metacls.logStartString2)
-        metacls.calledFrom()
+            metacls.__log('%ssetting of function, decorated' % metacls._debug_logStartString2)
+        metacls.__calledFrom()
 
         return value
 
 
 
     @classmethod
-    def createGetAttrMethod(metacls, cls):
+    def __createGetAttrMethod(metacls, cls):
         def f(self, key):
-            metacls.logOfGettingAttribute(cls, self, key)
+            metacls.__logOfGettingAttribute(cls, self, key)
             return super(cls, self).__getattribute__(key)
         return f
 
     @classmethod
-    def logOfGettingAttribute(metacls, cls, ins, key):
-        if not metacls.logfilter(cls.__name__, key):
+    def __logOfGettingAttribute(metacls, cls, ins, key):
+        if not metacls.__logfilter(cls.__name__, key):
             return
 
         if (
@@ -96,11 +96,11 @@ class DebugMetaClass(type):
             key not in ins.__dict__ and
             key not in ins.__class__.__dict__
         ):
-            if not metacls.logOfGettingUndefinedAttributes:
+            if not metacls._debug_logOfGettingUndefinedAttributes:
                 return
             of = 'undefined attribute'
         elif not key.startswith('__'):
-            if not metacls.logOfGettingAttributes:
+            if not metacls._debug_logOfGettingAttributes:
                 return
             # Methods are logged by decorators.
             value = super(cls, ins).__getattribute__(key)
@@ -109,48 +109,48 @@ class DebugMetaClass(type):
             of = 'attribute'
         # Some internal private variable starting with `__`.
         else:
-            if not metacls.logOfGettingPrivateAttributes:
+            if not metacls._debug_logOfGettingPrivateAttributes:
                 return
             of = 'internal attribute'
 
-        metacls.log('%sget of %s %s.%s' % (
-            metacls.logStartString1,
+        metacls.__log('%sget of %s %s.%s' % (
+            metacls._debug_logStartString1,
             of,
             cls.__name__,
             key,
         ))
-        metacls.calledFrom()
+        metacls.__calledFrom()
 
 
 
     @classmethod
-    def debugDecorator(metacls, cls):
+    def __debugDecorator(metacls, cls):
         def f(func):
             def wrapper(*args, **kwds):
-                metacls.logOfMethodCalls(cls, func, args, kwds)
-                res = metacls.logOfMethods(cls, func, args, kwds)
+                metacls.__logOfMethodCalls(cls, func, args, kwds)
+                res = metacls.__logOfMethods(cls, func, args, kwds)
                 return res
             return wrapper
         return f
 
     @classmethod
-    def logOfMethodCalls(metacls, cls, func, args, kwds):
-        if metacls._ifLogMethods(cls, func, args, kwds):
+    def __logOfMethodCalls(metacls, cls, func, args, kwds):
+        if metacls.__ifLogMethods(cls, func, args, kwds):
             return
 
-        metacls.log('%scall of %s.%s(%s%s%s)' % (
-            metacls.logStartString1,
+        metacls.__log('%scall of %s.%s(%s%s%s)' % (
+            metacls._debug_logStartString1,
             cls.__name__,
             func.__name__,
             ', '.join(str(arg) for arg in args),
             ', ' if kwds else '',
             ', '.join('%s=%s' % (k, v) for k, v in kwds.items()),
         ))
-        metacls.calledFrom()
+        metacls.__calledFrom()
 
     @classmethod
-    def logOfMethods(metacls, cls, func, args, kwds):
-        if metacls._ifLogMethods(cls, func, args, kwds):
+    def __logOfMethods(metacls, cls, func, args, kwds):
+        if metacls.__ifLogMethods(cls, func, args, kwds):
             res = func(*args, **kwds)
             return res
 
@@ -159,24 +159,24 @@ class DebugMetaClass(type):
             res = func(*args, **kwds)
             endTime = time.time()
 
-            if metacls.logTimes:
-                metacls.log('%stime: %.3f s' % (metacls.logStartString2, (endTime - startTime)))
-            if metacls.logOfResultOfMethod:
-                metacls.log('%swith result: %s' % (metacls.logStartString2, repr(res)))
+            if metacls._debug_logTimes:
+                metacls.__log('%stime: %.3f s' % (metacls._debug_logStartString2, (endTime - startTime)))
+            if metacls._debug_logOfResultOfMethod:
+                metacls.__log('%swith result: %s' % (metacls._debug_logStartString2, repr(res)))
         except Exception as e:
-            metacls.log('%swith fail: %s' % (metacls.logStartString2, repr(e)))
+            metacls.__log('%swith fail: %s' % (metacls._debug_logStartString2, repr(e)))
             raise
         else:
             return res
 
     @classmethod
-    def _ifLogMethods(metacls, cls, func, args, kwds):
-        return not metacls.logOfCallingMethod or not metacls.logfilter(cls.__name__, func.__name__, args, kwds)
+    def __ifLogMethods(metacls, cls, func, args, kwds):
+        return not metacls._debug_logOfCallingMethod or not metacls.__logfilter(cls.__name__, func.__name__, args, kwds)
 
 
 
     @classmethod
-    def logfilter(metacls, *args):
+    def __logfilter(metacls, *args):
         def toStr(val):
             if isinstance(val, (list, tuple)):
                 return ' '.join(toStr(v) for v in val)
@@ -185,18 +185,18 @@ class DebugMetaClass(type):
             else:
                 return str(val)
 
-        if re.search(metacls.logByRegexp, toStr(args)):
+        if re.search(metacls._debug_logByRegexp, toStr(args)):
             return True
         return False
 
 
 
     @classmethod
-    def calledFrom(metacls):
+    def __calledFrom(metacls):
         startDeep = 3
-        for calledFrom in traceback.extract_stack()[-(startDeep + metacls.tracebackDeep):-startDeep][::-1]:
-            metacls.log('%scalled from %s:%d: %s' % (
-                metacls.logStartString2,
+        for calledFrom in traceback.extract_stack()[-(startDeep + metacls._debug_tracebackDeep):-startDeep][::-1]:
+            metacls.__log('%scalled from %s:%d: %s' % (
+                metacls._debug_logStartString2,
                 calledFrom[0],
                 calledFrom[1],
                 calledFrom[3],
@@ -205,11 +205,11 @@ class DebugMetaClass(type):
 
 
     @classmethod
-    def log(metacls, msg):
+    def __log(metacls, msg):
         print(msg)
 
     @staticmethod
     def setLogMethod(logMethod):
         def f(metacls, msg):
             logMethod(msg)
-        DebugMetaClass.log = classmethod(f)
+        DebugMetaClass.__log = classmethod(f)

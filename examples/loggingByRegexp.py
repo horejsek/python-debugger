@@ -10,7 +10,7 @@ import time
 
 
 
-debugger.DebugMetaClass.logByRegexp = 'sum'
+debugger.DebugMetaClass._debug_logByRegexp = 'sum'
 
 
 
