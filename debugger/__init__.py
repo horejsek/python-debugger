@@ -8,6 +8,7 @@
 import traceback
 import time
 import re
+import logging
 
 
 
@@ -233,7 +234,7 @@ class DebugMetaClass(type):
 
     @classmethod
     def __log(metacls, msg):
-        print(msg)
+        logging.debug(msg)
 
     @staticmethod
     def setLogMethod(logMethod):
