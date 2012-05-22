@@ -22,6 +22,13 @@ install3:
 install-building-packages:
 	apt-get install build-essential dh-make debhelper devscripts
 
+test:
+	$(PYTHON) tests/allTests.py
+
+localdev:
+	cp git-hooks/* .git/hooks/
+	chmod 755 .git/hooks/
+
 clean:
 	$(PYTHON) setup.py clean
 	rm -rf build
