@@ -32,19 +32,28 @@ class DebugMetaClass(type):
     _debug_logStartString2 = '#> '
 
 
-    def __new__(metacls, classname, bases, classDict):
+    def __new__(metacls, className, bases, classDict):
         # Create new instance of classname.
-        cls = type.__new__(metacls, classname, bases, classDict)
+        cls = type.__new__(metacls, className, bases, classDict)
 
         # Decorate all methods.
         for attributeName, attribute in classDict.items():
-            if hasattr(attribute, '__call__'):
+            if hasattr(attribute, '__call__') and not attributeName.startswith('__'):
                 dbgDecorator = metacls.__debugDecorator(cls)
                 setattr(cls, attributeName, dbgDecorator(attribute))
 
         # Add logging methods for set & get.
-        cls.__setattr__ = metacls.__createSetAttrMethod(cls)
-        cls.__getattribute__ = metacls.__createGetAttrMethod(cls)
+        if '__setattr__' not in classDict:
+            cls.__setattr__ = metacls.__createSetAttrMethod(cls)
+        else:
+            decorator = metacls.__decorateSetAttrMethod(cls)
+            cls.__setattr__ = decorator(cls.__setattr__)
+
+        if '__getattribute__' not in classDict:
+            cls.__getattribute__ = metacls.__createGetAttrMethod(cls)
+        else:
+            decorator = metacls.__decorateGetAttrMethod(cls)
+            cls.__getattribute__ = decorator(cls.__getattribute__)
 
         return cls
 
@@ -55,6 +64,15 @@ class DebugMetaClass(type):
         def f(self, key, value):
             value = metacls.__logOfSettingAttribute(cls, key, value)
             return super(cls, self).__setattr__(key, value)
+        return f
+
+    @classmethod
+    def __decorateSetAttrMethod(metacls, cls):
+        def f(fc):
+            def wrapper(self, key, value):
+                value = metacls.__logOfSettingAttribute(cls, key, value)
+                return fc(self, key, value)
+            return wrapper
         return f
 
     @classmethod
@@ -84,6 +102,15 @@ class DebugMetaClass(type):
         def f(self, key):
             metacls.__logOfGettingAttribute(cls, self, key)
             return super(cls, self).__getattribute__(key)
+        return f
+
+    @classmethod
+    def __decorateGetAttrMethod(metacls, cls):
+        def f(fc):
+            def wrapper(self, key):
+                metacls.__logOfGettingAttribute(cls, self, key)
+                return fc(self, key)
+            return wrapper
         return f
 
     @classmethod
