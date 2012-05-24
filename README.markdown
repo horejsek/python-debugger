@@ -19,6 +19,10 @@ bpython) and try import module `debugger`. See for examples below.
 
 ## Examples
 
+    import debugging
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+
     class C(object):
         __metaclass__ = debugger.DebugMetaClass
 

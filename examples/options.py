@@ -6,6 +6,8 @@
 #
 
 import debugger
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 '''
 With following options debuger will print nothing.
