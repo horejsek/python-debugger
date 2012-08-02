@@ -9,10 +9,35 @@ import traceback
 import time
 import re
 import logging
+logging.basicConfig(level=logging.DEBUG)
+
+# Python 2 vs. Python 3.
+try:
+    unicode
+except NameError:
+    unicode = str
 
 
 
-class DebugMetaClass(type):
+def mergeDebugMetaclassWith(UserMetaclass):
+    """If your class already have some metaclass and you want to use this
+    debugger, you need create new one by inherit from both metaclasses - your
+    metaclass and metaclass of this debugger. For this purpose there is this
+    helper function which create new metaclass automaticaly. You just need to
+    pass on reference to your metaclass.
+    """
+    class NewMetaclass(UserMetaclass, DebugMetaclass):
+        def __new__(metacls, className, bases, classDict):
+            cls = UserMetaclass.__new__(metacls, className, bases, classDict)
+            DebugMetaclass.decorateIt(cls, className, bases, classDict)
+            return cls
+    return NewMetaclass
+
+
+
+class DebugMetaclass(type):
+    """Metaclass which do some logging of using your classes."""
+
     # Misc logging options.
     _debug_tracebackDeep = 3
     _debug_logByRegexp = ''
@@ -36,7 +61,11 @@ class DebugMetaClass(type):
     def __new__(metacls, className, bases, classDict):
         # Create new instance of classname.
         cls = type.__new__(metacls, className, bases, classDict)
+        metacls.decorateIt(cls, className, bases, classDict)
+        return cls
 
+    @classmethod
+    def decorateIt(metacls, cls, className, bases, classDict):
         # Decorate all methods.
         for attributeName, attribute in classDict.items():
             if hasattr(attribute, '__call__') and not attributeName.startswith('__'):
@@ -55,8 +84,6 @@ class DebugMetaClass(type):
         else:
             decorator = metacls.__decorateGetAttrMethod(cls)
             cls.__getattribute__ = decorator(cls.__getattribute__)
-
-        return cls
 
 
 
@@ -79,7 +106,7 @@ class DebugMetaClass(type):
     @classmethod
     def __logOfSettingAttribute(metacls, cls, key, value):
         if not metacls._debug_logOfSettingAttributes or not metacls.__logfilter(cls.__name__, key, value):
-            return
+            return value
 
         metacls.__log('%sset attribute %s.%s to %s' % (
             metacls._debug_logStartString1,
@@ -211,7 +238,7 @@ class DebugMetaClass(type):
             elif isinstance(val, dict):
                 return ' '.join('%s=%s' % (k, toStr(v)) for k, v in val.items())
             else:
-                return str(val)
+                return unicode(val)
 
         if re.search(metacls._debug_logByRegexp, toStr(args)):
             return True
@@ -240,4 +267,4 @@ class DebugMetaClass(type):
     def setLogMethod(logMethod):
         def f(metacls, msg):
             logMethod(msg)
-        DebugMetaClass.__log = classmethod(f)
+        DebugMetaclass.__log = classmethod(f)
