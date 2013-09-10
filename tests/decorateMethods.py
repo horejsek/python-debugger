@@ -1,19 +1,13 @@
 # -*- coding: utf-8 -*-
-#
-# debugger
-# Michal Horejsek <horejsekmichal@gmail.com>
-# https://github.com/horejsek/python-debugger
-#
 
 import unittest
 
 import debugger
-debugger.DebugMetaClass.setLogMethod(lambda msg: None)
-
+debugger.DebugMetaclass.set_log_method(lambda msg: None)
 
 
 class C(object):
-    __metaclass__ = debugger.DebugMetaClass
+    __metaclass__ = debugger.DebugMetaclass
 
     calls = 0
 
@@ -23,7 +17,6 @@ class C(object):
 class D(object):
     def f(self):
         pass
-
 
 
 class DecorateMethodsTest(unittest.TestCase):

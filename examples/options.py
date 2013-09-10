@@ -1,37 +1,31 @@
 # -*- coding: utf-8 -*-
-#
-# debugger
-# Michal Horejsek <horejsekmichal@gmail.com>
-# https://github.com/horejsek/python-debugger
-#
 
 import debugger
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-'''
+"""
 With following options debuger will print nothing.
-'''
+"""
 
-debugger.DebugMetaClass._debug_tracebackDeep = 0
-debugger.DebugMetaClass._debug_logByRegexp = ''
+debugger.DebugMetaclass._debug_traceback_deep = 0
+debugger.DebugMetaclass._debug_log_by_regexp = ''
 
-debugger.DebugMetaClass._debug_logOfSettingAttributes = False
-debugger.DebugMetaClass._debug_logOfGettingAttributes = False
-debugger.DebugMetaClass._debug_logOfGettingUndefinedAttributes = False
-debugger.DebugMetaClass._debug_logOfGettingPrivateAttributes = False
+debugger.DebugMetaclass._debug_log_setting_attributes = False
+debugger.DebugMetaclass._debug_log_getting_attributes = False
+debugger.DebugMetaclass._debug_log_getting_undefined_attributes = False
+debugger.DebugMetaclass._debug_log_getting_private_attributes = False
 
-debugger.DebugMetaClass._debug_logOfCallingMethod = False
-debugger.DebugMetaClass._debug_logOfResultOfMethod = False
-
-debugger.DebugMetaClass._debug_logTimes = False
-
+debugger.DebugMetaclass._debug_log_calling_method = False
+debugger.DebugMetaclass._debug_log_magic_method = False
+debugger.DebugMetaclass._debug_log_result_of_method = False
+debugger.DebugMetaclass._debug_log_times = False
 
 
 # Python3:
-# class C(object, metaclass=debugger.DebugMetaClass):
+# class C(object, metaclass=debugger.DebugMetaclass):
 class C(object):
-    __metaclass__ = debugger.DebugMetaClass
+    __metaclass__ = debugger.DebugMetaclass
 
     def __init__(self):
         pass
@@ -55,3 +49,4 @@ c.pow(3)
 c.pow(num=3, exponent=3)
 
 c.sum(1, 2, 3, 4, 5)
+
